@@ -25,9 +25,9 @@
   <Description DefaultValue="Fetch live P&amp;L data from Xero into your spreadsheet"/>
 
   <!-- Icons — replace with your own if you like -->
-  <IconUrl DefaultValue="https://YOUR-NETLIFY-APP.netlify.app/assets/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://YOUR-NETLIFY-APP.netlify.app/assets/icon-80.png"/>
-  <SupportUrl DefaultValue="https://YOUR-NETLIFY-APP.netlify.app"/>
+  <IconUrl DefaultValue="https://teal-sorbet-db2f7b.netlify.app/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://teal-sorbet-db2f7b.netlify.app/assets/icon-80.png"/>
+  <SupportUrl DefaultValue="https://teal-sorbet-db2f7b.netlify.app"/>
 
   <!-- Which Office apps this add-in works in -->
   <Hosts>
@@ -43,7 +43,7 @@
 
   <!-- Default task pane location (used by older Excel versions) -->
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://YOUR-NETLIFY-APP.netlify.app/taskpane.html"/>
+    <SourceLocation DefaultValue="https://teal-sorbet-db2f7b.netlify.app/taskpane.html"/>
   </DefaultSettings>
 
   <!-- Permissions — ReadWriteDocument lets us read and write cells -->
@@ -95,12 +95,12 @@
     <!-- String resources — all the text labels used above -->
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon16" DefaultValue="https://YOUR-NETLIFY-APP.netlify.app/assets/icon-16.png"/>
-        <bt:Image id="Icon32" DefaultValue="https://YOUR-NETLIFY-APP.netlify.app/assets/icon-32.png"/>
-        <bt:Image id="Icon80" DefaultValue="https://YOUR-NETLIFY-APP.netlify.app/assets/icon-80.png"/>
+        <bt:Image id="Icon16" DefaultValue="https://teal-sorbet-db2f7b.netlify.app/assets/icon-16.png"/>
+        <bt:Image id="Icon32" DefaultValue="https://teal-sorbet-db2f7b.netlify.app/assets/icon-32.png"/>
+        <bt:Image id="Icon80" DefaultValue="https://teal-sorbet-db2f7b.netlify.app/assets/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="TaskpaneUrl" DefaultValue="https://YOUR-NETLIFY-APP.netlify.app/taskpane.html"/>
+        <bt:Url id="TaskpaneUrl" DefaultValue="https://teal-sorbet-db2f7b.netlify.app/taskpane.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GroupLabel" DefaultValue="Xero"/>
