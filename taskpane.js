@@ -6,7 +6,7 @@
 */
 
 // ── Config — update APP_URL after deploying to Netlify ──────────────────────
-const APP_URL = "https://YOUR-NETLIFY-APP.netlify.app";
+const APP_URL = "https://teal-sorbet-db2f7b.netlify.app";
 
 const XERO_AUTH_URL = "https://login.xero.com/identity/connect/authorize";
 const XERO_API_BASE = "https://api.xero.com/api.xro/2.0";
