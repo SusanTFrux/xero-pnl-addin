@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xero P&L Refresher</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <!-- Fluent UI Web Components — Microsoft's official Office design system -->
+  <script type="module" src="https://unpkg.com/@fluentui/web-components@2.6.1/dist/web-components.min.js"></script>
+  <style>
+    /* ── Fluent 2 design tokens ─────────────────────────────────── */
+    :root {
+      --colorNeutralBackground1: #ffffff;
+      --colorNeutralBackground2: #fafafa;
+      --colorNeutralBackground3: #f5f5f5;
+      --colorNeutralBackground4: #f0f0f0;
+      --colorNeutralForeground1: #242424;
+      --colorNeutralForeground2: #424242;
+      --colorNeutralForeground3: #616161;
+      --colorNeutralForeground4: #707070;
+      --colorNeutralStroke1:     #d1d1d1;
+      --colorNeutralStroke2:     #e0e0e0;
+      --colorBrandBackground:    #0f6cbd;
+      --colorBrandBackground2:   #0078d4;
+      --colorBrandForeground1:   #0f6cbd;
+      --colorStatusSuccessBackground1: #f1faf1;
+      --colorStatusSuccessForeground1: #107c10;
+      --colorStatusSuccessBorderColor: #54b054;
+      --colorStatusWarningBackground1: #fff8f0;
+      --colorStatusWarningForeground1: #835b00;
+      --colorStatusWarningBorderColor: #f7c948;
+      --colorStatusDangerBackground1:  #fdf3f4;
+      --colorStatusDangerForeground1:  #c50f1f;
+      --colorStatusDangerBorderColor:  #e37d80;
+      --fontFamilyBase: "Segoe UI", system-ui, -apple-system, sans-serif;
+      --fontSizeBase100: 10px;
+      --fontSizeBase200: 12px;
+      --fontSizeBase300: 14px;
+      --fontSizeBase400: 16px;
+      --fontSizeBase500: 20px;
+      --fontWeightRegular: 400;
+      --fontWeightSemibold: 600;
+      --fontWeightBold: 700;
+      --borderRadiusMedium: 4px;
+      --borderRadiusLarge: 8px;
+      --spacingHorizontalM: 16px;
+      --spacingVerticalM: 12px;
+    }
+
+    /* ── Base ────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: var(--fontFamilyBase);
+      font-size: var(--fontSizeBase300);
+      color: var(--colorNeutralForeground1);
+      background: var(--colorNeutralBackground1);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header bar ──────────────────────────────────────────────── */
+    .app-header {
+      background: var(--colorBrandBackground);
+      color: #fff;
+      padding: 14px var(--spacingHorizontalM);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+    .app-header-icon {
+      width: 28px; height: 28px;
+      background: rgba(255,255,255,0.22);
+      border-radius: var(--borderRadiusMedium);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .app-header-text {}
+    .app-header-title {
+      font-size: var(--fontSizeBase300);
+      font-weight: var(--fontWeightSemibold);
+      line-height: 1.2;
+    }
+    .app-header-sub {
+      font-size: var(--fontSizeBase100);
+      opacity: 0.82;
+    }
+
+    /* ── Step indicator ──────────────────────────────────────────── */
+    .step-track {
+      display: flex;
+      align-items: center;
+      padding: 14px var(--spacingHorizontalM) 10px;
+      gap: 0;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--colorNeutralStroke2);
+    }
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      position: relative;
+      cursor: default;
+    }
+    .step-item::before {
+      content: "";
+      position: absolute;
+      top: 13px;
+      left: calc(50% + 14px);
+      right: calc(-50% + 14px);
+      height: 2px;
+      background: var(--colorNeutralStroke1);
+      z-index: 0;
+    }
+    .step-item:last-child::before { display: none; }
+    .step-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: var(--fontWeightSemibold);
+      border: 2px solid var(--colorNeutralStroke1);
+      background: var(--colorNeutralBackground1);
+      color: var(--colorNeutralForeground3);
+      position: relative; z-index: 1;
+      transition: all 0.2s;
+    }
+    .step-label {
+      font-size: 10px;
+      color: var(--colorNeutralForeground3);
+      margin-top: 4px;
+      text-align: center;
+      line-height: 1.2;
+      transition: color 0.2s;
+    }
+    .step-item.active .step-dot {
+      border-color: var(--colorBrandBackground);
+      background: var(--colorBrandBackground);
+      color: #fff;
+    }
+    .step-item.active .step-label {
+      color: var(--colorBrandForeground1);
+      font-weight: var(--fontWeightSemibold);
+    }
+    .step-item.done .step-dot {
+      border-color: var(--colorStatusSuccessForeground1);
+      background: var(--colorStatusSuccessForeground1);
+      color: #fff;
+    }
+    .step-item.done .step-label {
+      color: var(--colorStatusSuccessForeground1);
+    }
+    .step-item.done::before {
+      background: var(--colorStatusSuccessForeground1);
+    }
+
+    /* ── Scrollable content area ─────────────────────────────────── */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px var(--spacingHorizontalM);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ── Section cards ───────────────────────────────────────────── */
+    .card {
+      background: var(--colorNeutralBackground2);
+      border: 1px solid var(--colorNeutralStroke2);
+      border-radius: var(--borderRadiusLarge);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .card-title {
+      font-size: var(--fontSizeBase200);
+      font-weight: var(--fontWeightSemibold);
+      color: var(--colorNeutralForeground2);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Labels & inputs ─────────────────────────────────────────── */
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field-label {
+      font-size: var(--fontSizeBase200);
+      font-weight: var(--fontWeightSemibold);
+      color: var(--colorNeutralForeground2);
+    }
+    .field-input {
+      height: 32px;
+      padding: 0 10px;
+      border: 1px solid var(--colorNeutralStroke1);
+      border-radius: var(--borderRadiusMedium);
+      font-size: var(--fontSizeBase300);
+      font-family: var(--fontFamilyBase);
+      color: var(--colorNeutralForeground1);
+      background: var(--colorNeutralBackground1);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+    }
+    .field-input:focus {
+      border-color: var(--colorBrandBackground);
+      box-shadow: 0 0 0 1px var(--colorBrandBackground);
+    }
+    .field-hint {
+      font-size: var(--fontSizeBase100);
+      color: var(--colorNeutralForeground4);
+      line-height: 1.4;
+    }
+    .field-hint a { color: var(--colorBrandForeground1); text-decoration: none; }
+    .field-hint a:hover { text-decoration: underline; }
+
+    /* ── Buttons ─────────────────────────────────────────────────── */
+    .btn {
+      height: 32px;
+      padding: 0 16px;
+      border: none;
+      border-radius: var(--borderRadiusMedium);
+      font-size: var(--fontSizeBase300);
+      font-family: var(--fontFamilyBase);
+      font-weight: var(--fontWeightSemibold);
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary {
+      background: var(--colorBrandBackground);
+      color: #fff;
+    }
+    .btn-primary:hover:not(:disabled) { background: #0c5a9e; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--colorBrandForeground1);
+      border: 1px solid var(--colorBrandBackground);
+    }
+    .btn-secondary:hover:not(:disabled) { background: #e8f2fc; }
+    .btn-subtle {
+      background: transparent;
+      color: var(--colorNeutralForeground3);
+      border: 1px solid var(--colorNeutralStroke1);
+    }
+    .btn-subtle:hover:not(:disabled) { background: var(--colorNeutralBackground3); }
+    .btn-full { width: 100%; }
+    .btn-danger {
+      background: transparent;
+      color: var(--colorStatusDangerForeground1);
+      border: 1px solid var(--colorStatusDangerBorderColor);
+    }
+    .btn-danger:hover:not(:disabled) { background: var(--colorStatusDangerBackground1); }
+    .btn-sm { height: 26px; padding: 0 10px; font-size: var(--fontSizeBase200); }
+
+    /* ── Status badges ───────────────────────────────────────────── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: var(--fontSizeBase200);
+      font-weight: var(--fontWeightSemibold);
+      border: 1px solid transparent;
+    }
+    .badge-success {
+      background: var(--colorStatusSuccessBackground1);
+      color: var(--colorStatusSuccessForeground1);
+      border-color: var(--colorStatusSuccessBorderColor);
+    }
+    .badge-warning {
+      background: var(--colorStatusWarningBackground1);
+      color: var(--colorStatusWarningForeground1);
+      border-color: var(--colorStatusWarningBorderColor);
+    }
+    .badge-danger {
+      background: var(--colorStatusDangerBackground1);
+      color: var(--colorStatusDangerForeground1);
+      border-color: var(--colorStatusDangerBorderColor);
+    }
+    .badge-neutral {
+      background: var(--colorNeutralBackground3);
+      color: var(--colorNeutralForeground3);
+      border-color: var(--colorNeutralStroke1);
+    }
+
+    /* ── Progress ────────────────────────────────────────────────── */
+    .progress-wrap { display: none; flex-direction: column; gap: 6px; }
+    .progress-wrap.visible { display: flex; }
+    .progress-label {
+      font-size: var(--fontSizeBase200);
+      color: var(--colorNeutralForeground2);
+      font-weight: var(--fontWeightSemibold);
+    }
+    .progress-track {
+      height: 4px;
+      background: var(--colorNeutralBackground4);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--colorBrandBackground);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+    .progress-sub {
+      font-size: var(--fontSizeBase100);
+      color: var(--colorNeutralForeground3);
+    }
+
+    /* ── Log ─────────────────────────────────────────────────────── */
+    .log {
+      background: var(--colorNeutralForeground1);
+      border-radius: var(--borderRadiusMedium);
+      padding: 10px;
+      max-height: 140px;
+      overflow-y: auto;
+      font-family: "Cascadia Code", "Consolas", monospace;
+      font-size: 11px;
+    }
+    .log-line {
+      padding: 1px 0;
+      color: #c8c8c8;
+      line-height: 1.5;
+    }
+    .log-ok   { color: #4ec94e; }
+    .log-warn { color: #f7c948; }
+    .log-err  { color: #f85149; }
+
+    /* ── Info row ────────────────────────────────────────────────── */
+    .info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .info-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--colorNeutralBackground1);
+      border: 1px solid var(--colorNeutralStroke2);
+      border-radius: var(--borderRadiusMedium);
+      padding: 8px 12px;
+      flex: 1;
+      min-width: 70px;
+    }
+    .info-stat-val {
+      font-size: var(--fontSizeBase400);
+      font-weight: var(--fontWeightBold);
+      color: var(--colorBrandForeground1);
+      line-height: 1.2;
+    }
+    .info-stat-label {
+      font-size: 10px;
+      color: var(--colorNeutralForeground3);
+      text-align: center;
+      line-height: 1.3;
+      margin-top: 2px;
+    }
+
+    /* ── Divider ─────────────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--colorNeutralStroke2);
+    }
+
+    /* ── Footer ──────────────────────────────────────────────────── */
+    .footer {
+      border-top: 1px solid var(--colorNeutralStroke2);
+      padding: 10px var(--spacingHorizontalM);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      background: var(--colorNeutralBackground2);
+    }
+    .footer-brand {
+      font-size: 10px;
+      color: var(--colorNeutralForeground4);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="app-header-icon">📊</div>
+    <div class="app-header-text">
+      <div class="app-header-title">Xero P&amp;L Refresher</div>
+      <div class="app-header-sub">Pull live data from Xero into Excel</div>
+    </div>
+  </header>
+
+  <!-- Step indicator -->
+  <nav class="step-track" id="stepTrack" aria-label="Progress steps">
+    <div class="step-item done" id="stepItem1">
+      <div class="step-dot" id="stepDot1">✓</div>
+      <div class="step-label">Credentials</div>
+    </div>
+    <div class="step-item active" id="stepItem2">
+      <div class="step-dot" id="stepDot2">2</div>
+      <div class="step-label">Connect</div>
+    </div>
+    <div class="step-item" id="stepItem3">
+      <div class="step-dot" id="stepDot3">3</div>
+      <div class="step-label">Refresh</div>
+    </div>
+  </nav>
+
+  <!-- Scrollable main content -->
+  <main class="content">
+
+    <!-- Step 1: Credentials -->
+    <section class="card" id="sectionCreds">
+      <div class="card-title">Xero App Credentials</div>
+      <div class="field">
+        <label class="field-label" for="clientId">Client ID</label>
+        <input class="field-input" type="text" id="clientId" placeholder="From developer.xero.com" autocomplete="off" spellcheck="false"/>
+      </div>
+      <div class="field">
+        <label class="field-label" for="clientSecret">Client Secret</label>
+        <input class="field-input" type="password" id="clientSecret" placeholder="From developer.xero.com" autocomplete="off"/>
+      </div>
+      <p class="field-hint">
+        Get these from <a href="https://developer.xero.com" target="_blank">developer.xero.com</a>
+        → My Apps → your app. Saved locally in this browser only.
+      </p>
+      <button class="btn btn-subtle btn-sm" id="saveCredsBtn" onclick="saveCreds()" style="align-self:flex-start">
+        💾 Save credentials
+      </button>
+    </section>
+
+    <!-- Step 2: Connect -->
+    <section class="card" id="sectionConnect">
+      <div class="card-title">Xero Connection</div>
+      <div id="connStatus" class="badge badge-neutral" style="align-self:flex-start">
+        ● Not connected
+      </div>
+      <div id="orgInfo" style="display:none">
+        <div class="info-row" id="orgStats"></div>
+      </div>
+      <button class="btn btn-primary btn-full" id="connectBtn" onclick="connectXero()">
+        🔗 Connect to Xero
+      </button>
+      <button class="btn btn-danger btn-sm" id="disconnectBtn" onclick="disconnect()" style="display:none;align-self:flex-start">
+        Disconnect
+      </button>
+    </section>
+
+    <!-- Step 3: Refresh -->
+    <section class="card" id="sectionRefresh">
+      <div class="card-title">Fetch &amp; Refresh</div>
+      <p class="field-hint">
+        Reads <strong>row 5</strong> for month columns and <strong>column A</strong>
+        for account names, then fills matching data from Xero.
+      </p>
+
+      <!-- Progress -->
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-label" id="progressLabel">Fetching…</div>
+        <div class="progress-track">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-sub" id="progressSub"></div>
+      </div>
+
+      <!-- Result stats (shown after run) -->
+      <div id="resultStats" style="display:none">
+        <div class="info-row">
+          <div class="info-stat">
+            <div class="info-stat-val" id="statCells">—</div>
+            <div class="info-stat-label">Cells updated</div>
+          </div>
+          <div class="info-stat">
+            <div class="info-stat-val" id="statMonths">—</div>
+            <div class="info-stat-label">Months fetched</div>
+          </div>
+          <div class="info-stat">
+            <div class="info-stat-val" id="statUnmatched">—</div>
+            <div class="info-stat-label">Unmatched</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full" id="refreshBtn" onclick="runRefresh()" disabled>
+        🔄 Fetch from Xero &amp; Update Sheet
+      </button>
+    </section>
+
+    <!-- Log -->
+    <section class="card">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between">
+        Activity Log
+        <button class="btn btn-subtle btn-sm" onclick="clearLog()">Clear</button>
+      </div>
+      <div class="log" id="logArea" role="log" aria-live="polite">
+        <div class="log-line">Ready — connect to Xero to get started.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span class="footer-brand">Xero P&amp;L Refresher</span>
+    <span class="badge badge-neutral" id="versionBadge" style="font-size:10px;padding:2px 7px">v2.0</span>
+  </footer>
+
+  <script src="taskpane.js"></script>
+</body>
+</html>
